@@ -324,4 +324,4 @@ MIT
 
 ## Contacto
 
-Para más información, visita el repositorio o contacta al equipo de desarrollo.
+davinsonp@gmail.com
