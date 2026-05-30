@@ -49,12 +49,122 @@ tutoring/
 └── README.md
 ```
 
+## Arquitectura
+
+### Diagrama de Arquitectura
+
+La plataforma sigue una arquitectura cliente-servidor de tres capas:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Cliente (Frontend)                        │
+│              React - Interfaz de Usuario                     │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+                    HTTP/REST
+                       │
+┌──────────────────────▼──────────────────────────────────────┐
+│                   API Gateway                                │
+│           Node.js/Express - Servidor Backend                │
+│     • Autenticación y Autorización                           │
+│     • Manejo de Solicitudes                                  │
+│     • Lógica de Negocio                                      │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+            Base de Datos / Servicios
+                       │
+┌──────────────────────▼──────────────────────────────────────┐
+│              Capa de Persistencia                            │
+│     • Base de Datos (SQL/NoSQL)                              │
+│     • Servicios Externos                                     │
+│     • Cache                                                  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Componentes Principales
+
+**Backend:**
+- API REST con rutas seguras
+- Autenticación JWT
+- Validación de datos
+- Gestión de sesiones
+
+**Frontend:**
+- Interfaz responsiva
+- Gestión de estado
+- Consumo de API
+- Experiencia de usuario optimizada
+
+**Base de Datos:**
+- Almacenamiento de usuarios
+- Información de sesiones
+- Historial y calificaciones
+
 ## Tecnologías Utilizadas
 
 - Backend: Node.js, Express
 - Frontend: React
 - Base de datos: [Especificar]
 - Autenticación: JWT
+
+## Flujo de Trabajo - Sprints
+
+### Metodología
+
+Utilizamos Scrum como metodología de desarrollo con sprints de 2 semanas.
+
+### Ciclo de Sprint
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                 PLANIFICACIÓN DEL SPRINT                    │
+│  • Sprint Planning (2 horas)                                │
+│  • Definición de objetivos                                  │
+│  • Estimación de tareas (Story Points)                       │
+└────────────┬────────────────────────────────────────────────┘
+             │
+             ▼
+┌─────────────────────────────────────────────────────────────┐
+│              EJECUCIÓN DEL SPRINT (2 semanas)               │
+│  • Daily Standup (15 minutos diarios)                       │
+│  • Desarrollo de features                                   │
+│  • Code Review y Testing                                    │
+│  • Integración continua                                     │
+└────────────┬────────────────────────────────────────────────┘
+             │
+             ▼
+┌─────────────────────────────────────────────────────────────┐
+│                 REVISIÓN DEL SPRINT                         │
+│  • Sprint Review (1.5 horas)                                │
+│  • Demostración de features completadas                     │
+│  • Feedback de stakeholders                                 │
+└────────────┬────────────────────────────────────────────────┘
+             │
+             ▼
+┌─────────────────────────────────────────────────────────────┐
+│            RETROSPECTIVA DEL SPRINT                         │
+│  • Sprint Retrospective (1 hora)                            │
+│  • Análisis de qué salió bien                               │
+│  • Identificación de mejoras                                │
+│  • Acciones para el próximo sprint                          │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Estructura de Tareas
+
+Cada tarea es categorizada según su prioridad:
+
+- **Must Have:** Crítico para el sprint
+- **Should Have:** Importante pero puede posponerse
+- **Could Have:** Nice to have
+- **Won't Have:** No incluido en este sprint
+
+### Roles del Equipo
+
+- **Product Owner:** Define requisitos y prioridades
+- **Scrum Master:** Facilita el proceso
+- **Desarrollo:** Implementa las features
+- **QA:** Asegura calidad
 
 ## Licencia
 
