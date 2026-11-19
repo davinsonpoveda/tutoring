@@ -6,7 +6,12 @@ import userRoutes from "./routes/userRoutes.js"; // Importar rutas de usuario
 
 dotenv.config(); // Cargar variables de entorno
 
-console.log("🔍 MONGO_URI:", process.env.MONGO_URI); // Verificar si se carga la URI
+for (const key of ["MONGO_URI", "JWT_SECRET"]) {
+  if (!process.env[key]) {
+    console.error(`❌ Falta la variable de entorno ${key} (ver backend/.env.example)`);
+    process.exit(1);
+  }
+}
 
 const app = express();
 
