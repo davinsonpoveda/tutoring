@@ -1,327 +1,88 @@
-# Tutoring Platform
+# 🥑 Avobot
 
-Una plataforma web para tutoría en línea que conecta estudiantes con tutores de manera eficiente y profesional.
+Plataforma web de tutorías en **Matemáticas, Cálculo e Ingeniería Eléctrica** con un tutor de IA integrado en la página.
 
-## Descripción
+```mermaid
+flowchart LR
+    U(["👤 Estudiante"]) --> H["🏠 Página principal"]
 
-Plataforma integral de tutoría en línea diseñada para facilitar la conexión entre estudiantes y tutores calificados, permitiendo la gestión de sesiones, seguimiento del progreso y evaluación de servicios.
+    H -->|"Reserva una Clase"| L["🔐 Login y registro"]
+    H -->|"Clases Personalizadas"| C["📖 Cómo son las clases"]
+    H -->|"Ejercicios Prácticos"| E["📝 Repositorio de documentos"]
+    H -->|"Horarios Flexibles"| A["📅 Calendario de reservas"]
+    H -->|"Clic en el aguacate"| B["🥑 Avobot, tutor IA"]
 
-## Características
+    L --> API["⚙️ API Node + Express + JWT"]
+    API --> DB[("🗄️ MongoDB")]
+    B --> OW["💬 Open WebUI"] --> LM["🧠 LM Studio, modelo local"]
+```
 
-- Sistema de registro y autenticación segura
-- Perfiles profesionales de tutores y estudiantes
-- Búsqueda y filtrado avanzado de tutores
-- Reserva y gestión de sesiones en línea
-- Sistema de calificaciones y reseñas
-- Historial de sesiones y progreso académico
+## ¿Qué hace cada parte?
 
-## Requisitos
+| Botón o sección | Qué hace | Estado |
+|---|---|---|
+| **Reserva una Clase** | Lleva al login | Real: usa el backend |
+| **Login y registro** | Crea usuarios y devuelve un token JWT | Real: guarda en MongoDB |
+| **Clases Personalizadas** | Resumen de las clases con vistas ilustrativas | Demo: son maquetas, no capturas |
+| **Ejercicios Prácticos** | Repositorio con filtros, buscador y vista previa | Demo: 9 documentos de ejemplo |
+| **Horarios Flexibles** | Calendario para elegir día, hora y materia | Demo: las reservas se guardan solo en el navegador |
+| **Avobot (aguacate)** | Chat con IA en un panel dentro de la página | Real: modelo local, lento en equipos modestos |
 
-- Node.js versión 16 o superior
-- npm o yarn
-- Conexión a internet
+## Cómo está armado
 
-## Instalación
+```
+Avobot_PoC/
+├── backend/     API REST (Node, Express, Mongoose, JWT)
+├── frontend/    Interfaz (React, Vite, Tailwind)
+└── openwebui/   Open WebUI con la marca Avobot (docker-compose y logos)
+```
 
-### Backend
+| Pieza | Puerto | Para qué |
+|---|---|---|
+| Frontend (Vite) | 5173 | La página |
+| Backend (Express) | 5000 | API de usuarios |
+| MongoDB | 27017 | Base de datos `Avobot_POC`, colección `Avobot` |
+| Open WebUI | 3000 | Interfaz del chat |
+| LM Studio | 1234 | Servidor del modelo de IA |
 
+## Puesta en marcha
+
+### 1. Backend
 ```bash
 cd backend
 npm install
-npm start
+cp .env.example .env     # y rellena los valores
+node server.js
 ```
 
-### Frontend
+Variables de `backend/.env`:
+```
+PORT=5000
+MONGO_URI=mongodb://localhost:27017/Avobot_POC
+JWT_SECRET=<una cadena larga y aleatoria>
+```
+> Nunca subas `.env` a git. Ya está en el `.gitignore`.
 
+### 2. Frontend
 ```bash
 cd frontend
 npm install
-npm start
+npm run dev
 ```
 
-## Estructura del Proyecto
+### 3. Tutor IA (Avobot)
+1. En LM Studio, descarga un modelo pequeño (por ejemplo **Qwen2.5-1.5B-Instruct**) y arranca el servidor local en el puerto 1234.
+2. Levanta Open WebUI con la marca Avobot:
+   ```bash
+   cd openwebui
+   docker compose up -d
+   ```
+3. En Open WebUI, ve a **Ajustes → Conexiones**, añade una conexión OpenAI con la URL `http://host.docker.internal:1234/v1` y guarda.
+4. En **Ajustes → Modelos**, edita tu modelo y apaga **Herramientas Integradas**. Sin esto, cada pregunta lleva miles de tokens de más y el modelo tarda minutos.
 
-```
-tutoring/
-├── backend/          # API REST con Node.js/Express
-├── frontend/         # Interfaz web con React
-├── docs/             # Documentación adicional
-└── README.md
-```
+La URL del chat se puede cambiar con `VITE_OPENWEBUI_URL` en `frontend/.env`.
 
-## Arquitectura
-
-### Diagrama de Arquitectura
-
-La plataforma sigue una arquitectura cliente-servidor de tres capas:
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    Cliente (Frontend)                        │
-│              React - Interfaz de Usuario                     │
-└──────────────────────┬──────────────────────────────────────┘
-                       │
-                    HTTP/REST
-                       │
-┌──────────────────────▼──────────────────────────────────────┐
-│                   API Gateway                                │
-│           Node.js/Express - Servidor Backend                │
-│     • Autenticación y Autorización                           │
-│     • Manejo de Solicitudes                                  │
-│     • Lógica de Negocio                                      │
-└──────────────────────┬──────────────────────────────────────┘
-                       │
-            Base de Datos / Servicios
-                       │
-┌──────────────────────▼──────────────────────────────────────┐
-│              Capa de Persistencia                            │
-│     • Base de Datos (SQL/NoSQL)                              │
-│     • Servicios Externos                                     │
-│     • Cache                                                  │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### Componentes Principales
-
-**Backend:**
-- API REST con rutas seguras
-- Autenticación JWT
-- Validación de datos
-- Gestión de sesiones
-
-**Frontend:**
-- Interfaz responsiva
-- Gestión de estado
-- Consumo de API
-- Experiencia de usuario optimizada
-
-**Base de Datos:**
-- Almacenamiento de usuarios
-- Información de sesiones
-- Historial y calificaciones
-
-## Arquitectura Limpia
-
-Este proyecto implementa los principios de **Clean Architecture** para mantener un código mantenible, escalable y testeable.
-
-### Estructura de Capas
-
-```
-┌──────────────────────────────────────────┐
-│         Controllers (Express)             │  Capa de Presentación
-│    • Manejo de requests/responses          │
-│    • Validación de entrada                 │
-└──────────────────┬───────────────────────┘
-                   │
-┌──────────────────▼───────────────────────┐
-│         Use Cases / Services              │  Capa de Aplicación
-│    • Lógica de negocio                    │
-│    • Orquestación                         │
-└──────────────────┬───────────────────────┘
-                   │
-┌──────────────────▼───────────────────────┐
-│       Domain / Entities & Interfaces      │  Capa de Dominio
-│    • Reglas de negocio                    │
-│    • Interfaces y contratos               │
-└──────────────────┬───────────────────────┘
-                   │
-┌──────────────────▼───────────────────────┐
-│      Repositories & Infrastructure        │  Capa de Infraestructura
-│    • Acceso a datos                       │
-│    • Servicios externos                   │
-└──────────────────────────────────────────┘
-```
-
-### Beneficios
-
-- Independencia de frameworks
-- Testeable y fácil de probar
-- Independencia de la base de datos
-- Separación clara de responsabilidades
-- Fácil mantenimiento y escalabilidad
-
-## Principios SOLID
-
-El proyecto sigue los 5 principios SOLID para escribir código limpio y mantenible:
-
-### 1. Single Responsibility Principle (SRP)
-
-Cada clase tiene una única responsabilidad bien definida.
-
-**Ejemplo:**
-- `UserController`: Solo maneja las solicitudes HTTP de usuarios
-- `UserService`: Contiene la lógica de negocio de usuarios
-- `UserRepository`: Solo accede a los datos de usuarios
-
-```
-UserController -> maneja HTTP
-UserService -> lógica de negocio
-UserRepository -> acceso a BD
-```
-
-### 2. Open/Closed Principle (OCP)
-
-Las entidades deben estar abiertas para extensión pero cerradas para modificación.
-
-**Implementación:**
-- Uso de interfaces para extender funcionalidad
-- Inyección de dependencias
-- Estrategias polimórficas
-
-### 3. Liskov Substitution Principle (LSP)
-
-Las clases derivadas pueden sustituir a sus clases base sin alterar el comportamiento.
-
-**Aplicación:**
-- Implementación consistente de interfaces
-- Contratos claros en métodos
-- Sin comportamientos sorpresa en subclases
-
-### 4. Interface Segregation Principle (ISP)
-
-Los clientes no deben depender de interfaces que no usan.
-
-**Práctica:**
-- Interfaces pequeñas y específicas
-- Evitar interfaces "fat" (muy grandes)
-- Cada interfaz con un propósito claro
-
-```typescript
-// Correcto: Interfaces segregadas
-interface IUserReader {
-  getUserById(id: string): Promise<User>;
-}
-
-interface IUserWriter {
-  createUser(data: CreateUserDTO): Promise<User>;
-  updateUser(id: string, data: UpdateUserDTO): Promise<User>;
-}
-
-// Incorrecto: Interfaz muy grande
-interface IUserService {
-  getUserById(id: string): Promise<User>;
-  createUser(data: CreateUserDTO): Promise<User>;
-  updateUser(id: string, data: UpdateUserDTO): Promise<User>;
-  deleteUser(id: string): Promise<void>;
-  sendEmail(to: string, message: string): Promise<void>;
-  generateReport(): Promise<Report>;
-}
-```
-
-### 5. Dependency Inversion Principle (DIP)
-
-Las clases de alto nivel no deben depender de clases de bajo nivel. Ambas deben depender de abstracciones.
-
-**Implementación:**
-- Inyección de dependencias
-- Usar interfaces, no implementaciones concretas
-- Contenedor de DI (Inversión de Control)
-
-```typescript
-// Correcto: Depende de abstracción
-class UserService {
-  constructor(private userRepository: IUserRepository) {}
-}
-
-// Incorrecto: Acoplamiento directo
-class UserService {
-  private userRepository = new UserRepository();
-}
-```
-
-## Patrones de Diseño Utilizados
-
-### Repository Pattern
-
-Abstrae el acceso a datos, permitiendo cambiar la fuente de datos sin afectar la lógica de negocio.
-
-```
-Domain Layer → Repository Interface
-      ↑
-      ├← MySQL Repository Implementation
-      ├← MongoDB Repository Implementation
-      └← Cache Repository Implementation
-```
-
-### Dependency Injection
-
-Facilita el testing y la flexibilidad en la configuración de dependencias.
-
-### Service Layer
-
-Contiene la lógica de negocio, separada de los controladores y la persistencia.
-
-## Tecnologías Utilizadas
-
-- Backend: Node.js, Express
-- Frontend: React
-- Base de datos: [Especificar]
-- Autenticación: JWT
-- Patrones: Clean Architecture, SOLID Principles
-
-## Flujo de Trabajo - Sprints
-
-### Metodología
-
-Utilizamos Scrum como metodología de desarrollo con sprints de 2 semanas.
-
-### Ciclo de Sprint
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                 PLANIFICACIÓN DEL SPRINT                    │
-│  • Sprint Planning (2 horas)                                │
-│  • Definición de objetivos                                  │
-│  • Estimación de tareas (Story Points)                       │
-└────────────┬────────────────────────────────────────────────┘
-             │
-             ▼
-┌─────────────────────────────────────────────────────────────┐
-│              EJECUCIÓN DEL SPRINT (2 semanas)               │
-│  • Daily Standup (15 minutos diarios)                       │
-│  • Desarrollo de features                                   │
-│  • Code Review y Testing                                    │
-│  • Integración continua                                     │
-└────────────┬────────────────────────────────────────────────┘
-             │
-             ▼
-┌─────────────────────────────────────────────────────────────┐
-│                 REVISIÓN DEL SPRINT                         │
-│  • Sprint Review (1.5 horas)                                │
-│  • Demostración de features completadas                     │
-│  • Feedback de stakeholders                                 │
-└────────────┬────────────────────────────────────────────────┘
-             │
-             ▼
-┌─────────────────────────────────────────────────────────────┐
-│            RETROSPECTIVA DEL SPRINT                         │
-│  • Sprint Retrospective (1 hora)                            │
-│  • Análisis de qué salió bien                               │
-│  • Identificación de mejoras                                │
-│  • Acciones para el próximo sprint                          │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### Estructura de Tareas
-
-Cada tarea es categorizada según su prioridad:
-
-- **Must Have:** Crítico para el sprint
-- **Should Have:** Importante pero puede posponerse
-- **Could Have:** Nice to have
-- **Won't Have:** No incluido en este sprint
-
-### Roles del Equipo
-
-- **Product Owner:** Define requisitos y prioridades
-- **Scrum Master:** Facilita el proceso
-- **Desarrollo:** Implementa las features
-- **QA:** Asegura calidad
-
-## Licencia
-
-MIT
-
-## Contacto
-
-davinsonp@gmail.com
+## Limitaciones conocidas
+- El nombre del chat aparece como "Avobot (Open WebUI)": Open WebUI añade ese sufijo sin licencia empresarial.
+- Las reservas, los documentos y las vistas de clases son datos de ejemplo, sin backend.
+- Los modelos locales de 7B o más son muy lentos en equipos con poca RAM.
