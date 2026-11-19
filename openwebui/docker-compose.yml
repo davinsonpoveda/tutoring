@@ -1,0 +1,44 @@
+# Open WebUI con la marca Avobot.
+#
+# Uso (desde esta carpeta):   docker compose up -d
+# Reutiliza el volumen "open-webui" que ya tiene tus chats y ajustes.
+#
+# Los logos se montan archivo por archivo (en las dos rutas donde Open WebUI
+# los sirve) para no pisar el resto de assets de la imagen.
+name: avobot
+
+services:
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: mi-tutor-ia
+    ports:
+      - "3000:8080"
+    environment:
+      WEBUI_NAME: Avobot
+      WEBUI_AUTH: "False"
+    volumes:
+      - open-webui:/app/backend/data
+      - ./branding/favicon.png:/app/build/static/favicon.png:ro
+      - ./branding/favicon.png:/app/backend/open_webui/static/favicon.png:ro
+      - ./branding/favicon.ico:/app/build/static/favicon.ico:ro
+      - ./branding/favicon.ico:/app/backend/open_webui/static/favicon.ico:ro
+      - ./branding/favicon.svg:/app/build/static/favicon.svg:ro
+      - ./branding/favicon.svg:/app/backend/open_webui/static/favicon.svg:ro
+      - ./branding/favicon-96x96.png:/app/build/static/favicon-96x96.png:ro
+      - ./branding/favicon-96x96.png:/app/backend/open_webui/static/favicon-96x96.png:ro
+      - ./branding/logo.png:/app/build/static/logo.png:ro
+      - ./branding/logo.png:/app/backend/open_webui/static/logo.png:ro
+      - ./branding/apple-touch-icon.png:/app/build/static/apple-touch-icon.png:ro
+      - ./branding/apple-touch-icon.png:/app/backend/open_webui/static/apple-touch-icon.png:ro
+      - ./branding/web-app-manifest-192x192.png:/app/build/static/web-app-manifest-192x192.png:ro
+      - ./branding/web-app-manifest-192x192.png:/app/backend/open_webui/static/web-app-manifest-192x192.png:ro
+      - ./branding/web-app-manifest-512x512.png:/app/build/static/web-app-manifest-512x512.png:ro
+      - ./branding/web-app-manifest-512x512.png:/app/backend/open_webui/static/web-app-manifest-512x512.png:ro
+      - ./branding/splash.png:/app/build/static/splash.png:ro
+      - ./branding/splash.png:/app/backend/open_webui/static/splash.png:ro
+      - ./branding/splash-dark.png:/app/build/static/splash-dark.png:ro
+      - ./branding/splash-dark.png:/app/backend/open_webui/static/splash-dark.png:ro
+
+volumes:
+  open-webui:
+    external: true
